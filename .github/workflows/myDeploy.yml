@@ -34,5 +34,5 @@ jobs: # 작업의 단위
         run: echo "my ci/cd" # 작업에서 실행할 쉡 스크립트 내용 echo 출력 명령어
 
       - name: mykey # 이름은 mykey
-        run: echo ${{ secrets.AWS_SECRET_KEY }}
+        run: echo ${{ secrets.HOST }}
   
