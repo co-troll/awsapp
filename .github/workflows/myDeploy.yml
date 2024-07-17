@@ -1,69 +1,79 @@
-# name: GitHub Actions Demo
-# run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-# on: [push]
-# jobs:
-#   Explore-GitHub-Actions:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-#       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-#       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-#       - name: Check out repository code
-#         uses: actions/checkout@v4
-#       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-#       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-#       - name: List files in the repository
-#         run: |
-#           ls ${{ github.workspace }}
-#       - run: echo "🍏 This job's status is ${{ job.status }}."
-
-# name: CI/CD 구축
-
-# # 이벤트를 구독
-# on: 
-#   push: # push 이벤트가 발생하면 실행
-#     branches: # push가 발생할 브랜치가 뭐일때 실행할지
-#       - main
-# jobs: # 작업의 단위
-#   myTest: #식별자 이름(우리가 이름 정해도 됨)
-#     runs-on: ubuntu-latest # 사용한 운영체제
-
-#     # 작업의 가장 작은 단위
-#     steps: 
-#       - name: shell console test # 가장 작은 작업 단위의 이름
-#         run: echo "my ci/cd" # 작업에서 실행할 쉡 스크립트 내용 echo 출력 명령어
-
-#       - name: mykey # 이름은 mykey
-#         run: echo ${{ secrets.HOST }}
-  
-name: CI/CD 구축
+name: last nest deploy
 
 on:
   push:
     branches:
       - main
-
 jobs:
-  Deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4 # uses 사용할 라이브러리
+        use: actions/checkout@v4
+    
+      - name: set up node
+        use: actions/setup-node@v4
+
+      - name: create .env
+        run: |
+          "${{ secrets.MY_KEY }}" > .env
+
+      - name: nam install # 의존성 설치 npm audit fix || true 보안 취약점을 자동으로 유연하게 수정해서 실패해도 일단 빌드 진행하면서 의존성 유연하게 설치
+        run: |
+          npm install
+          npm audit fix || true
+
+      - name: build nestjs
+        run: |
+          source .env
+          npm run build
+
+      - name: build output # ls -la dist dist폴더 안의 내요을 상세하게 출력 pwd 현재 작업 경로 출력
+        run: |
+          ls -al dist
+          pwd
+
+      - name: Upload build artifacts # 빌드 준비 단계 업로드 하기전 단계
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
 
       - name: ssh key
-        uses: webfactory/ssh-agent@v0.5.3
-        with: # 작성할 속성을 정의
-          ssh-private-key: ${{ secrets.AWS_SECRET_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
+          chmod 600 ~/.ssh/aws_key
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
 
-      - name: ssh ec2 접속
+      - name: debug artifacts
+        run: |
+          ls -al .dist
+    
+      - name: ec2 deploy
         uses: appleboy/ssh-action@v1.0.3
-        with:
-          key: ${{ secrets.AWS_SECRET_KEY }}
+        with: 
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_SECRET_KEY }}
           port: ${{ secrets.PORT }}
           script: | # 실행할 스크립트
-            cd /home/ubuntu/study
-            git pull origin main
-            pm2 kill
-            npm start
+            cd ~
+            rm -rf dist
+            mkdir dist
+    
+      - name: ec2 artifacts copy
+        run: |
+          scp -r -i ~/.ssh/aws_key ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/dist/
+
+      - name: deploy to ec2
+        uses: appleboy/ssh-action@v1.0.3
+        with: 
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_SECRET_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~
+            pm2 reload system.config.js --env production
