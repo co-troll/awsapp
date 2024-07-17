@@ -58,9 +58,9 @@ jobs:
       - name: ssh ec2 접속
         uses: appleboy/ssh-action@v0.1.2
         with:
+          key: ${{ secrets.AWS_SECRET_KEY }}
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.AWS_SECRET_KEY }}
           port: ${{ secrets.PORT }}
           script: | # 실행할 스크립트
             cd /home/ubuntu/study
