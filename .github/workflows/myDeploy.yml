@@ -25,7 +25,7 @@ jobs:
 
       - name: build nestjs
         run: |
-          source .env
+          # source .env
           npm run build
 
       - name: build output # ls -la dist dist폴더 안의 내요을 상세하게 출력 pwd 현재 작업 경로 출력
