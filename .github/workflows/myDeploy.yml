@@ -49,7 +49,7 @@ jobs:
 
       - name: debug artifacts
         run: |
-          ls -al .dist
+          ls -al dist
     
       - name: ec2 deploy
         uses: appleboy/ssh-action@v1.0.3
