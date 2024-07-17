@@ -68,7 +68,8 @@ jobs:
       - name: ec2 artifacts copy
         run: |
           scp -r -i ~/.ssh/aws_key ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/dist/
-          scp -r -i ~/.ssh/aws_key ./node_modules/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/dist/
+          scp -r -i ~/.ssh/aws_key ./package.json ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/
+
 
       - name: deploy to ec2
         uses: appleboy/ssh-action@v1.0.3
@@ -79,4 +80,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd ~
+            npm install
             pm2 reload system.config.js --env production
