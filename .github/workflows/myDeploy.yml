@@ -64,15 +64,15 @@ jobs:
             cd ~
             rm -rf dist
             mkdir dist
-            rm -rf node_modules
-            mkdir node_modules
+            rm -rf package.json
+            mkdir package.json
             
 
     
       - name: ec2 artifacts copy
         run: |
           scp -r -i ~/.ssh/aws_key ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/dist/
-          scp -r -i ~/.ssh/aws_key ./node_modules/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/node_modules/
+          scp -r -i ~/.ssh/aws_key ./package.json ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu
 
 
       - name: deploy to ec2
