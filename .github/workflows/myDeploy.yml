@@ -45,7 +45,7 @@ on:
 
 jobs:
   Deploy:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4 # uses 사용할 라이브러리
