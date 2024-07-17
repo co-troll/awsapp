@@ -79,5 +79,3 @@ jobs:
           script: |
             cd ~
             pm2 reload system.config.js --env production
-
-          
