@@ -87,7 +87,7 @@ jobs: # 작업의 단위
           scp -i ~/.ssh/aws_key system.config.js ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/
 
       - name: ec2 npm install
-        uses: applboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -100,7 +100,7 @@ jobs: # 작업의 단위
             npm install
 
       - name: deploy to ec2
-        uses: applboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
