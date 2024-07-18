@@ -6,7 +6,7 @@ on: # 이벤트를 등록
       - main
 
 jobs: # 작업의 단위
-   Build: # 식별자
+  Build: # 식별자
     runs-on: ubuntu-latest # 러너에서 사용할 os
 
     steps: # 작업의 가장 작은 단위
