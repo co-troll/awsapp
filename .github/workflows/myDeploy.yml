@@ -37,4 +37,51 @@ jobs: # 작업의 단위
           ls
           pwd
         
+      # 러너에 빌드된 파이과 의존성들이 있는 상태 빌드 서버
+      # 운영 배포 서버에 전송해줘야한다
+      - name: upload build
+        uses: actions/upload-artifact@v4 # 빌드 결과물 저장, 빌드된 바이너리 패키지 
+        with:
+          name: build-artifact
+          path: |
+            dist/
+            package.json
+            package-lock.json
+
+      # 운영 서버에 전송 ec2에 파일을 전송
+      # ssh
+      - name: ssh key create
+        run: |
+          mkdir -p ~/.ssh
+          ls
+          pwd
+          echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
+          chomd 600 ~/.ssh/aws_key
+          ssh-keyscan -H ${{ secrets.HOST }} > ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
+
+      # 배포 주닙단계 배포하기 전에 생성할 폴더 및 파일 확인
+      # script는 et 운영 서버에서 실행할 쉘 스킓트 내용
+      # ec2 가상 서버에서 실행될 내용
+      - name: ec2 deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_SECRET_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~
+            rm -rf dist
+            mkdir dist
+            rm -rf package.json
+            rm -rf package-lock.json
+
+      - name: ec2 copy arifact
+        run: |
+          scp -r -i ~/.ssh/aws_key ./dist/* ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/dist/
+          scp -i ~/.ssh/aws_key package.json ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/
+          scp -i ~/.ssh/aws_key package-lock.json ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/home/ubuntu/
+        
+          
 
