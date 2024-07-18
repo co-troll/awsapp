@@ -51,15 +51,12 @@ jobs: # 작업의 단위
 
       # 운영 서버에 전송 ec2에 파일을 전송
       # ssh
-      - name: ssh key create
+      - name: install ssh key
         run: |
-          cd ~
           mkdir -p ~/.ssh
-          ls -al
-          pwd
           echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
           chmod 600 ~/.ssh/aws_key
-          ssh-keyscan -H ${{ secrets.HOST }} > ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           cat ~/.ssh/known_hosts
 
       # 배포 주닙단계 배포하기 전에 생성할 폴더 및 파일 확인
