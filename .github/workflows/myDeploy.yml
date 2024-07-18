@@ -4,3 +4,23 @@ on: # 이벤트를 등록
   push: # push 이벤트가 발생하면
     branches: # branches 어떤 브랜치에 이벤트가 일어났을때 작업을 동작시킨다.
       - main
+
+jobs: # 작업의 단위
+   Build: # 식별자
+    runs-on: ubuntu-latest # 러너에서 사용할 os
+
+    steps: # 작업의 가장 작은 단위
+      - name: checkout # 작업의 작은 단위의 이름
+        uses: actions/checkout@v4 # 레포지토리를 체크아웃 할수 있게 도와주는 라이브러리
+
+      - name: set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: test # 의존성을 설치하기 전에 폴더 구조 확인
+        run: |
+          ls
+          pwd
+
+
