@@ -54,10 +54,15 @@ jobs: # 작업의 단위
       - name: install ssh key
         run: |
           cd ~
+          pwd
           mkdir -p .ssh
+          pwd
           echo "${{ secrets.AWS_SECRET_KEY }}" > .ssh/aws_key
+          pwd
           chmod 600 .ssh/aws_key
+          pwd
           ssh-keyscan -H ${{ secrets.HOST }} >> .ssh/known_hosts
+          pwd
           cat .ssh/known_hosts
 
       # 배포 주닙단계 배포하기 전에 생성할 폴더 및 파일 확인
