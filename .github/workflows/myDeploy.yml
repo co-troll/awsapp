@@ -53,12 +53,12 @@ jobs: # 작업의 단위
       # ssh
       - name: install ssh key
         run: |
-          rm -rf ~/.ssh
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
-          chmod 600 ~/.ssh/aws_key
-          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-          cat ~/.ssh/known_hosts
+          cd ~
+          mkdir -p .ssh
+          echo "${{ secrets.AWS_SECRET_KEY }}" > .ssh/aws_key
+          chmod 600 .ssh/aws_key
+          ssh-keyscan -H ${{ secrets.HOST }} >> .ssh/known_hosts
+          cat .ssh/known_hosts
 
       # 배포 주닙단계 배포하기 전에 생성할 폴더 및 파일 확인
       # script는 et 운영 서버에서 실행할 쉘 스킓트 내용
