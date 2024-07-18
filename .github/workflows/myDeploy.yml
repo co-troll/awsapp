@@ -54,7 +54,7 @@ jobs: # 작업의 단위
       - name: install ssh key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
+          echo &quot;${{ secrets.AWS_SECRET_KEY }}&quot; > ~/.ssh/aws_key
           chmod 600 ~/.ssh/aws_key
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           cat ~/.ssh/known_hosts
