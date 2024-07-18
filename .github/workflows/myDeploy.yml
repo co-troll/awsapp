@@ -54,7 +54,7 @@ jobs: # 작업의 단위
       - name: ssh key create
         run: |
           mkdir -p ~/.ssh
-          ls
+          ls -al
           pwd
           echo "${{ secrets.AWS_SECRET_KEY }}" > ~/.ssh/aws_key
           chmod 600 ~/.ssh/aws_key
